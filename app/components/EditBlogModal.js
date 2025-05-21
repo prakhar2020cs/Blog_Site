@@ -8,6 +8,16 @@ const EditBlogModal = ({ isOpen, onClose, onSubmit ,initialData}) => {
       title: '',
       description: ''
     });
+
+    useEffect(() => {
+      if (initialData) {
+        setFormData({
+          id: initialData._id,
+          title: initialData.title,
+          description: initialData.description
+        });
+      }
+    }, [initialData]);
     
     // Handle ESC key to close modal
     useEffect(() => {
@@ -34,11 +44,12 @@ const EditBlogModal = ({ isOpen, onClose, onSubmit ,initialData}) => {
       });
     };
     
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      onSubmit(formData);
-      setFormData({ title: '', description: '' }); // Reset form
-    };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit({ ...initialData, ...formData }); // Pass blog ID along with updated data
+    setFormData({ title: '', description: '' });
+  };
+    
     
     return (
       <div className="fixed inset-0 z-50 overflow-y-auto modal-backdrop">
@@ -58,7 +69,7 @@ const EditBlogModal = ({ isOpen, onClose, onSubmit ,initialData}) => {
             {/* Header */}
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-gray-900">Create New Post</h3>
+                <h3 className="text-lg font-medium text-blue-500">Edit Blog </h3>
                 <button
                   onClick={onClose}
                   className="text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -122,7 +133,7 @@ const EditBlogModal = ({ isOpen, onClose, onSubmit ,initialData}) => {
                   type="submit"
                   className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
-                  Create Blog
+                  Save Edited Blog
                 </button>
               </div>
             </form>

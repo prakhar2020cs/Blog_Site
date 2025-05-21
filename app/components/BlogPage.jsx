@@ -85,7 +85,10 @@ const BlogPage = () => {
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/blog');
+      const res = await fetch('/api/blog',{
+        method: 'POST',
+        body: JSON.stringify({ getPublicBlogs: true }),
+      });
       
       if (!res.ok) {
         throw new Error('Failed to fetch blogs');

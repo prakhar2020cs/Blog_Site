@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
-import Blog from '@/models/Post';
+import Admin from '@/models/Admin';
 import mongoose from "mongoose";
 import jwt from 'jsonwebtoken';
 
@@ -32,13 +32,13 @@ export async function POST(req) {
     await connectDB();
     const { userEmail, userPassword } = await req.json();
     
-    const stored = await Blog.findOne({ email: userEmail });
+    const stored = await Admin.findOne({ email: userEmail });
     
     if (!stored) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 });
     }
 
-    // Verify password
+ 
     if (stored.password !== userPassword) {
       return NextResponse.json({ message: 'Invalid password' }, { status: 401 });
     }

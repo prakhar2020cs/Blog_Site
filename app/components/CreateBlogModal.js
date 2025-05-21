@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const CreateBlogModal = ({ isOpen, onClose, onSubmit }) => {
+const CreateBlogModal = ({ isOpen, onClose, handleCreateBlog  }) => {
     // If modal is not open, don't render anything
     if (!isOpen) return null;
     
@@ -9,15 +9,7 @@ const CreateBlogModal = ({ isOpen, onClose, onSubmit }) => {
       description: ''
     });
 
-    useEffect(() => {
-      if (initialData) {
-        setFormData({
-          id: initialData._id,
-          title: initialData.title,
-          description: initialData.description
-        });
-      }
-    }, [initialData]);
+   
     
     // Handle ESC key to close modal
     useEffect(() => {
@@ -41,13 +33,12 @@ const CreateBlogModal = ({ isOpen, onClose, onSubmit }) => {
       setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+const handleSubmit =(e)=>{
+e.preventDefault();
+handleCreateBlog(formData)
+}
  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit({ ...initialData, ...formData }); // Pass blog ID along with updated data
-    setFormData({ title: '', description: '' });
-  };
-    
+  
     return (
       <div className="fixed inset-0 z-50 overflow-y-auto modal-backdrop">
         {/* Backdrop */}

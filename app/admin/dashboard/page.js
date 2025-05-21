@@ -1,28 +1,41 @@
 "use client";
 
 import CreateBlogModal from "@/app/components/CreateBlogModal";
+import DeleteBlogModal from "@/app/components/DeleteBlogModal";
 import EditBlogModal from "@/app/components/EditBlogModal";
+import Cookies from "js-cookie";
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
+  const router = useRouter();
+  const[flag, setFlag] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadBlogs, setLoadBlogs] = useState(false);
   const [error, setError] = useState(null);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentBlog, setCurrentBlog] = useState(null);
-  // const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [confirmDelete, setConfirmDelete] = useState(null);
-  // const { logout } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const openEditModal = () => setIsEditModalOpen(true);
   const closeEditModal = () => setIsEditModalOpen(false);
+  const openDeleteModal = () => setIsDeleteModalOpen(true);
+  const closeDeleteModal = () => setIsDeleteModalOpen(false);
+
+// useEffect(()=>{
+//   const token = Cookies.get('token');
+//   if(!token){
+//     router.push('/login');
+//   }
+// },[])
 
   const handleCreateBlog = async (blogData) => {
+    console.log("handle create blog",blogData);
+
     try {
       const res = await fetch("/api/blog", {
         method: "POST",
@@ -62,18 +75,32 @@ export default function Dashboard() {
       }),
     });
 
+   
     let updatedBlog = await res.json();
     console.log("updated Blog", updatedBlog);
     updatedBlog.success
       ? alert("Blog updated")
       : alert("error updating Blog");
-
+      setLoadBlogs(!loadBlogs);
     closeEditModal();
   };
 
   useEffect(() => {
     getBlogs();
   }, [loadBlogs]);
+
+  const handleLogout = () => {
+    // Delete the token cookie
+    Cookies.remove('token');
+    // Redirect to login page
+    router.push('/login');
+  };
+
+useEffect(()=>{
+if(flag === "delete"){
+  openDeleteModal()
+}
+},[currentBlog])
 
   async function getBlogs() {
     console.log("getting blogs..");
@@ -95,56 +122,31 @@ export default function Dashboard() {
     }
   }
 
-  const handleDeleteConfirm = (blogId) => {
-    setConfirmDelete(blogId);
-    handleDeleteBlog();
-  
-  };
-
   const handleDeleteBlog = async () => {
-    if (!confirmDelete) return;
+ console.log("handle Delete Blog" , currentBlog)  
 
     try {
-      const res = fetch("/api/blog",
-        {
-          method:"DELETE",
-          
-        }
-      )
-      setBlogs(blogs.filter((blog) => blog._id !== confirmDelete));
-      setConfirmDelete(null);
+      const res = await fetch('/api/blog', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: currentBlog._id }),
+      });
+
+      const data = await res.json();
+      
+      if(data.success){
+        alert("Blog deleted successfully");
+        setLoadBlogs(!loadBlogs);
+      }else{
+        alert("Error deleting blog");
+      }
+
     } catch (error) {
       console.error("Failed to delete blog:", error);
     }
   };
 
-  // const handleSubmit = async (formData) => {
-  //   setIsSubmitting(true);
-  //   try {
-  //     if (currentBlog) {
-  //       // Update existing blog
-  //       const updatedBlog = await api.updateBlog(currentBlog.id, formData);
-  //       setBlogs(blogs.map(blog => blog.id === currentBlog.id ? updatedBlog : blog));
-  //     } else {
-  //       // Create new blog
-  //       const newBlog = await api.createBlog(formData);
-  //       setBlogs([...blogs, newBlog]);
-  //     }
-  //     setIsModalOpen(false);
-  //   } catch (error) {
-  //     console.error('Failed to save blog:', error);
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
-  // For demo purposes, we'll use some sample data
-  // useEffect(() => {
-  //   if (blogs.length === 0 && !loading) {
-
-  //     setLoading(false);
-  //   }
-  // }, [blogs, loading]);
+ 
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -157,10 +159,18 @@ export default function Dashboard() {
                   Admin Dashboard
                 </h1>
               </div>
+              <div className="ml-6 flex items-center">
+                <a
+                  href="/"
+                  className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Home
+                </a>
+              </div>
             </div>
             <div className="flex items-center">
               <button
-                //   onClick={logout}
+                onClick={handleLogout}
                 className="ml-4 px-3 py-1 rounded-md text-sm font-medium text-white bg-indigo-700 hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Logout
@@ -177,7 +187,7 @@ export default function Dashboard() {
               Blog Management
             </h2>
             <button
-              onClick={openModal}
+              onClick={()=>openModal()}
               className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Create New Blog
@@ -190,7 +200,7 @@ export default function Dashboard() {
         <CreateBlogModal
           isOpen={isModalOpen}
           onClose={closeModal}
-          onSubmit={handleCreateBlog}
+          handleCreateBlog={handleCreateBlog}
         />
 
         <EditBlogModal
@@ -198,6 +208,12 @@ export default function Dashboard() {
           onClose={closeEditModal}
           onSubmit={handleEditBlog}
           initialData={currentBlog}
+        />
+        <DeleteBlogModal
+         isOpen={isDeleteModalOpen}
+         onClose={closeDeleteModal}
+         onSubmit={handleDeleteBlog}
+         initialData={currentBlog}
         />
 
         {error && (
@@ -245,7 +261,7 @@ export default function Dashboard() {
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               ></path>
-            </svg>
+            </svg> 
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -285,7 +301,11 @@ export default function Dashboard() {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDeleteConfirm(blog.id)}
+                    onClick={() =>{ 
+                      setCurrentBlog(blog);
+                      setFlag("delete");
+                   
+                    }}
                     className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                   >
                     Delete
