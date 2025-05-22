@@ -272,16 +272,13 @@ if(flag === "delete"){
                 className="blog-card bg-white overflow-hidden shadow rounded-lg"
               >
                 <div className="px-4 py-5 sm:p-6">
-                  <div className="flex items-center">
-                    <ImageUpload url={blog.image} blog={blog}/>
-                    <h3 className="text-lg font-medium text-gray-900 truncate flex-1">
+                <div className="block">
+                    <div className="mb-4">
+                      <ImageUpload url={blog.image} blog={blog}/>
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 truncate">
                       {blog.title}
                     </h3>
-                    {/* {!blog.published && (
-                        <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                          Draft
-                        </span>
-                      )} */}
                   </div>
                   <p className="mt-2 text-sm text-gray-500 line-clamp-2">
                     {blog.description}
