@@ -273,7 +273,7 @@ if(flag === "delete"){
               >
                 <div className="px-4 py-5 sm:p-6">
                   <div className="flex items-center">
-                    <ImageUpload url={blog.image}/>
+                    <ImageUpload url={blog.image} blog={blog}/>
                     <h3 className="text-lg font-medium text-gray-900 truncate flex-1">
                       {blog.title}
                     </h3>

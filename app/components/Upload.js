@@ -2,12 +2,14 @@
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 
-export default function ImageUpload({ url }) {
+export default function ImageUpload({ url, blog }) {
   const [imageUrl, setImageUrl] = useState(url);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+console.log("upload blog",blog);
   const handleUpload = async (e) => {
+    console.log("upload blog clicked",blog._id);
     try {
       setIsLoading(true);
       setError('');
@@ -17,7 +19,7 @@ export default function ImageUpload({ url }) {
 
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('url', url);
+      formData.append('id', blog._id);
 
       const res = await fetch('/api/upload', {
         method: 'POST',
