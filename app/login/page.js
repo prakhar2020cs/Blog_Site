@@ -86,6 +86,14 @@ export default function LoginPage() {
           sameSite: 'strict'
         });
         
+        // Store user image in cookie if it exists
+        if (data.user.image) {
+          Cookies.set('userImage', data.user.image, {
+            expires: 1,
+            sameSite: 'strict'
+          });
+        }
+        
         router.push("/admin/dashboard");
       } else {
         setSubmitError(data.message || 'Login failed');

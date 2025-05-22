@@ -56,7 +56,8 @@ export async function POST(req) {
         token,
         user: {
           id: stored._id,
-          email: stored.email
+          email: stored.email,
+          image: stored.image || ''
         }
       }, 
       { status: 200 }

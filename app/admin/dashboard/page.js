@@ -6,6 +6,7 @@ import EditBlogModal from "@/app/components/EditBlogModal";
 import Cookies from "js-cookie";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
+import ImageUpload from "@/app/components/Upload";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -272,6 +273,7 @@ if(flag === "delete"){
               >
                 <div className="px-4 py-5 sm:p-6">
                   <div className="flex items-center">
+                    <ImageUpload url={blog.image}/>
                     <h3 className="text-lg font-medium text-gray-900 truncate flex-1">
                       {blog.title}
                     </h3>
